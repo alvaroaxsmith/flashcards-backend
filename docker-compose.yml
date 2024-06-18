@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:13
+    container_name: flashcards_postgres
+    environment:
+      POSTGRES_USER: yourusername
+      POSTGRES_PASSWORD: yourpassword
+      POSTGRES_DB: flashcardsdb
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - flashcards-network
+
+  backend:
+    build:
+      context: .
+    container_name: flashcards_backend
+    environment:
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_USER: yourusername
+      DATABASE_PASSWORD: yourpassword
+      DATABASE_NAME: flashcardsdb
+    ports:
+      - '3000:3000'
+    depends_on:
+      - postgres
+    networks:
+      - flashcards-network
+
+networks:
+  flashcards-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
